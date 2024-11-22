@@ -75,11 +75,11 @@ dependencies {
     implementation (libs.androidx.lifecycle.viewmodel.compose)
 
     // hilt
-    implementation("com.google.dagger:hilt-android:2.48")
+    implementation("com.google.dagger:hilt-android:2.49")
     kapt("com.google.dagger:hilt-android-compiler:2.48")
 
     // hilt with viewmodel
-    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+    implementation(libs.androidx.hilt.navigation.compose)
 
 
     // logging interceptor
