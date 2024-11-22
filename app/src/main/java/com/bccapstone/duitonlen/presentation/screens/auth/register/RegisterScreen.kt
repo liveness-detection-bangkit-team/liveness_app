@@ -75,8 +75,8 @@ fun RegisterScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.onPrimary)
-            .padding(16.dp),
+            .background(MaterialTheme.colorScheme.background)
+            .padding(28.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -169,7 +169,8 @@ fun RegisterScreen(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(50.dp),
+                .height(50.dp)
+                .padding(bottom = 16.dp),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
             enabled = fullname.isNotBlank() && username.isNotBlank() && password.isNotBlank()
         ) {

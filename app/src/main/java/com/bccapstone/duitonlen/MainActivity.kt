@@ -15,6 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.NavHost
 import com.bccapstone.duitonlen.presentation.screens.auth.register.RegisterScreen
+import com.bccapstone.duitonlen.presentation.screens.home.Greeting
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -28,7 +29,7 @@ class MainActivity : ComponentActivity() {
                     composable("login") {
                         LoginScreen(
                             onLoginSuccess = {
-                                navController.navigate("register") {
+                                navController.navigate("home") {
                                     popUpTo("login") { inclusive = true }
                                 }
                             },
@@ -55,6 +56,16 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
+                    composable("home") {
+                        Greeting(
+                            onLogoutSuccess = {
+                                navController.navigate("login") {
+                                    popUpTo("home") { inclusive = true }
+                                }
+                            }
+                        )
+                    }
+
                 }
             }
         }
@@ -62,18 +73,3 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    DuitOnlenTheme {
-        Greeting("Android")
-    }
-}

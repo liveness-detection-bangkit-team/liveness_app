@@ -70,8 +70,8 @@ fun LoginScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.onPrimary)
-            .padding(16.dp),
+            .background(MaterialTheme.colorScheme.background)
+            .padding(28.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -80,7 +80,7 @@ fun LoginScreen(
             imageVector = ImageVector.vectorResource(R.drawable.logo_app),
             contentDescription = "Logo",
             modifier = Modifier.size(250.dp),
-            tint = MaterialTheme.colorScheme.primary
+            tint = MaterialTheme.colorScheme.primary,
         )
 
 
@@ -147,6 +147,7 @@ fun LoginScreen(
             },
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(bottom = 16.dp)
                 .height(50.dp),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
             enabled = username.isNotBlank() && password.isNotBlank()

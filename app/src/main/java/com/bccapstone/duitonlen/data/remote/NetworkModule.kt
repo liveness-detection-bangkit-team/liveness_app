@@ -1,6 +1,7 @@
 package com.bccapstone.duitonlen.data.remote
 
 import com.bccapstone.duitonlen.BuildConfig
+import com.bccapstone.duitonlen.data.local.DuitOnlenCookieJar
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,18 +26,10 @@ object NetworkModule {
         } else {
             HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.NONE)
         }
+        val cookieJar = DuitOnlenCookieJar()
         return OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
-            .addInterceptor { chain ->
-                val response = chain.proceed(chain.request())
-                // Extract the token from cookies
-                val cookies = response.headers("Set-Cookie")
-                cookies.find { it.startsWith("X-LIVENESS-TOKEN=") }?.let { cookie ->
-                    // Store the token securely
-                    // You might want to use DataStore or other secure storage
-                }
-                response
-            }
+            .cookieJar(cookieJar)
             .build()
     }
 
