@@ -1,32 +1,51 @@
 package com.bccapstone.duitonlen
 
+import LoginScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.bccapstone.duitonlen.ui.theme.DuitOnlenTheme
+import com.bccapstone.duitonlen.presentation.theme.DuitOnlenTheme
+import dagger.hilt.android.AndroidEntryPoint
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.NavHost
+import com.bccapstone.duitonlen.presentation.screens.auth.register.RegisterScreen
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             DuitOnlenTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                val navController = rememberNavController()
+                NavHost(navController = navController, startDestination = "login") {
+                    composable("login") {
+                        LoginScreen(onLoginSuccess = {
+                            navController.navigate("register") {
+                                popUpTo("login") { inclusive = true }
+                            }
+                        },
+                            onNavigateToRegister = {
+                                navController.navigate("register") {
+                                    popUpTo("login") { inclusive = true }
+                                }
+                            })
+                    }
+
+                    composable("register") {
+                        RegisterScreen()
+                    }
+
                 }
             }
         }
+
     }
 }
 
