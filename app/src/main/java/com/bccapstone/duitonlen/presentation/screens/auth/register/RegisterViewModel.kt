@@ -1,46 +1,45 @@
-package com.bccapstone.duitonlen.presentation.screens.auth.login
+package com.bccapstone.duitonlen.presentation.screens.auth.register
 
 import retrofit2.HttpException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.bccapstone.duitonlen.data.Result
 import com.bccapstone.duitonlen.data.models.ApiResponse
-import com.bccapstone.duitonlen.data.repository.LoginRepository
-import com.bccapstone.duitonlen.utils.getErrorMessage
+import com.bccapstone.duitonlen.data.repository.RegisterRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+import com.bccapstone.duitonlen.data.Result
+import com.bccapstone.duitonlen.utils.getErrorMessage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody.Companion.toResponseBody
 import retrofit2.Response
-import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(
-    private val loginRepository: LoginRepository
-) : ViewModel() {
+class RegisterViewModel @Inject constructor(
+    private val registerRepository: RegisterRepository
+): ViewModel() {
+    private val _registerResult = MutableStateFlow<Result<ApiResponse>>(Result.Idle)
+    val registerState = _registerResult.asStateFlow()
 
-    private val _loginResult = MutableStateFlow<Result<ApiResponse>>(Result.Idle)
-    val loginState = _loginResult.asStateFlow()
-
-    fun login(username: String, password: String) {
+    fun register(username: String, password: String, fullname: String) {
         viewModelScope.launch {
-            _loginResult.value = Result.Loading
+            _registerResult.value = Result.Loading
             try {
-                val response = loginRepository.login(username, password).also {
+                val response = registerRepository.register(username, password, fullname).also {
                     // check if the response is not successful
-                    if (it.statusCode != 200) {
+                    if (it.statusCode != 201) {
                         throw HttpException(Response.error<ApiResponse>(it.statusCode, it.message.toResponseBody()))
                     }
                 }
-                _loginResult.value = Result.Success(response)
+                _registerResult.value = Result.Success(response)
             } catch (e: HttpException) {
                 // handle the error from api, shows the message from the json response
                 val message = e.response()?.errorBody()?.string()?.getErrorMessage() ?: "An error occurred"
-                _loginResult.value = Result.Error(message)
+                _registerResult.value = Result.Error(message)
             } catch (e: Exception) {
                 // handle other errors
-                _loginResult.value = Result.Error(e.message ?: "An error occurred")
+                _registerResult.value = Result.Error(e.message ?: "An error occurred")
             }
         }
     }

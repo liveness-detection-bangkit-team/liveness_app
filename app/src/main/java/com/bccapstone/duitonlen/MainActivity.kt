@@ -26,20 +26,33 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 NavHost(navController = navController, startDestination = "login") {
                     composable("login") {
-                        LoginScreen(onLoginSuccess = {
-                            navController.navigate("register") {
-                                popUpTo("login") { inclusive = true }
-                            }
-                        },
+                        LoginScreen(
+                            onLoginSuccess = {
+                                navController.navigate("register") {
+                                    popUpTo("login") { inclusive = true }
+                                }
+                            },
                             onNavigateToRegister = {
                                 navController.navigate("register") {
                                     popUpTo("login") { inclusive = true }
                                 }
-                            })
+                            }
+                        )
                     }
 
                     composable("register") {
-                        RegisterScreen()
+                        RegisterScreen(
+                            onRegisterSuccess = {
+                                navController.navigate("login") {
+                                    popUpTo("register") { inclusive = true }
+                                }
+                            },
+                            onNavigateToLogin = {
+                                navController.navigate("login") {
+                                    popUpTo("register") { inclusive = true }
+                                }
+                            }
+                        )
                     }
 
                 }

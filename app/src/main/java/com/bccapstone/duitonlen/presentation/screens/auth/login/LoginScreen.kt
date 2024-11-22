@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -37,6 +38,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.bccapstone.duitonlen.R
 import com.bccapstone.duitonlen.presentation.screens.auth.login.LoginViewModel
 import com.bccapstone.duitonlen.data.Result
+import com.bccapstone.duitonlen.presentation.theme.DuitOnlenTheme
 
 @Composable
 fun LoginScreen(
@@ -78,7 +80,7 @@ fun LoginScreen(
             imageVector = ImageVector.vectorResource(R.drawable.logo_app),
             contentDescription = "Logo",
             modifier = Modifier.size(250.dp),
-            tint = Color.Red
+            tint = MaterialTheme.colorScheme.primary
         )
 
 
@@ -146,7 +148,8 @@ fun LoginScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+            enabled = username.isNotBlank() && password.isNotBlank()
         ) {
             if (loginState is Result.Loading) {
                 CircularProgressIndicator(
@@ -157,6 +160,7 @@ fun LoginScreen(
             } else {
                 Text(
                     text = "Login",
+                    fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onPrimary
                 )
             }
@@ -175,7 +179,7 @@ fun LoginScreen(
             Text(
                 text = "Sign up",
                 color = MaterialTheme.colorScheme.secondary,
-                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                fontWeight = FontWeight.Bold,
                 modifier = Modifier.clickable(onClick = onNavigateToRegister)
             )
         }
@@ -186,7 +190,7 @@ fun LoginScreen(
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
-    MaterialTheme {
+    DuitOnlenTheme {
         LoginScreen(onLoginSuccess = {}, onNavigateToRegister = {})
     }
 }
