@@ -37,7 +37,7 @@ class InstructionScreen : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    LivenessScreenContainer()
+                    InstructionScreenContainer()
                 }
             }
         }
@@ -45,7 +45,7 @@ class InstructionScreen : ComponentActivity() {
 }
 
 @Composable
-fun LivenessScreenContainer() {
+fun InstructionScreenContainer() {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -53,11 +53,11 @@ fun LivenessScreenContainer() {
                 color = Color.White,
             )
     ){
-        Liveness()
+        Instruction()
     }
 }
 @Composable
-fun Liveness() {
+fun Instruction() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -125,9 +125,9 @@ fun Liveness() {
 
 @Preview(showBackground = true)
 @Composable
-fun CobaPreviewL() {
+fun PreviewInstruction() {
     DuitOnlenTheme {
-        LivenessScreenContainer()
+        InstructionScreenContainer()
     }
 }
 
