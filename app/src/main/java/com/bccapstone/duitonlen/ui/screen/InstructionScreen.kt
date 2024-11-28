@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -25,27 +26,23 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.bccapstone.duitonlen.ui.theme.DuitOnlenTheme
 import com.bccapstone.duitonlen.R
 
-class InstructionScreen : ComponentActivity() {
+class InstructionScreen() : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             DuitOnlenTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    InstructionScreenContainer()
-                }
+//                InstructionScreenContainer()
             }
         }
     }
 }
 
 @Composable
-fun InstructionScreenContainer() {
+fun InstructionScreenContainer(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -53,11 +50,11 @@ fun InstructionScreenContainer() {
                 color = Color.White,
             )
     ){
-        Instruction()
+        Instruction(navController)
     }
 }
 @Composable
-fun Instruction() {
+fun Instruction(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -108,7 +105,11 @@ fun Instruction() {
                     .background(
                         color = Color.Red,
                         shape = RoundedCornerShape(8.dp)
-                    ),
+                    )
+                    .clickable {
+                        navController.navigate("front_liveness")
+                    }
+                ,
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -127,7 +128,7 @@ fun Instruction() {
 @Composable
 fun PreviewInstruction() {
     DuitOnlenTheme {
-        InstructionScreenContainer()
+//        InstructionScreenContainer()
     }
 }
 

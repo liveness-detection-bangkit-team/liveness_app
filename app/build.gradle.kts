@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -65,6 +67,17 @@ dependencies {
     implementation(libs.androidx.camera.view)
     implementation(libs.ui)
 
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
+    implementation("com.google.firebase:firebase-ml-modeldownloader")
 
+    // tflite
+    implementation ("org.tensorflow:tensorflow-lite:2.13.0")  // Use the latest stable version
+    implementation("org.tensorflow:tensorflow-lite-gpu:2.13.0")
+    implementation ("org.tensorflow:tensorflow-lite-support:0.4.4")
+
+
+    // jetpack navigation
+    implementation("androidx.navigation:navigation-compose:2.8.4")
 
 }

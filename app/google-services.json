@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "130938248041",
+    "project_id": "liveness-detection-braincore",
+    "storage_bucket": "liveness-detection-braincore.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:130938248041:android:0df9441eb263095500bbf8",
+        "android_client_info": {
+          "package_name": "com.bccapstone.duitonlen"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC66NOdl90GcAE88ytz8Hl6n0LcjF4Czjo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
