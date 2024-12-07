@@ -21,7 +21,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "BASE_URL", "\"https://flask-app-928539025046.asia-southeast2.run.app\"")
+        buildConfigField("String", "BASE_URL", "\"https://app-liveness.et.r.appspot.com\"")
     }
 
     buildTypes {
