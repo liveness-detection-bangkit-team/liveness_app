@@ -89,4 +89,7 @@ dependencies {
     implementation (libs.androidx.runtime.livedata)
     implementation (libs.androidx.navigation.compose)
     implementation (libs.accompanist.systemuicontroller)
+
+//    splash
+    implementation(libs.androidx.core.splashscreen)
 }
