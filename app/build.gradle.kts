@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 
+    id("com.google.gms.google-services")
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
 
@@ -84,6 +85,28 @@ dependencies {
 
     // logging interceptor
     implementation(libs.logging.interceptor)
+
+    implementation(libs.androidx.camera.core)
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.camera.view)
+    implementation(libs.ui)
+
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    implementation("com.google.firebase:firebase-ml-modeldownloader")
+
+    // tflite
+    implementation ("org.tensorflow:tensorflow-lite:2.13.0")  // Use the latest stable version
+    implementation("org.tensorflow:tensorflow-lite-gpu:2.13.0")
+    implementation ("org.tensorflow:tensorflow-lite-support:0.4.4")
+
+    // jetpack navigation
+    implementation("androidx.navigation:navigation-compose:2.8.4")
+
+    // Lifecycle
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
+    implementation ("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
 
     implementation (libs.androidx.material.icons.extended)
     implementation (libs.androidx.runtime.livedata)
