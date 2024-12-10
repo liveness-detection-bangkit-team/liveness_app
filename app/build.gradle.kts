@@ -4,7 +4,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 
     id("com.google.gms.google-services")
-
+    id("kotlin-kapt")
+    id("dagger.hilt.android.plugin")
 
 }
 
@@ -20,6 +21,8 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "BASE_URL", "\"https://app-liveness.et.r.appspot.com\"")
     }
 
     buildTypes {
@@ -39,8 +42,13 @@ android {
         jvmTarget = "11"
     }
     buildFeatures {
+        buildConfig = true
         compose = true
     }
+}
+
+kapt {
+    correctErrorTypes = true
 }
 
 dependencies {
@@ -53,6 +61,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.espresso.core)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -61,7 +70,21 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    implementation(libs.androidx.material.icons.extended)
+    implementation (libs.retrofit)
+    implementation (libs.converter.gson)
+    implementation (libs.kotlinx.coroutines.android)
+    implementation (libs.androidx.lifecycle.viewmodel.compose)
+
+    // hilt
+    implementation("com.google.dagger:hilt-android:2.49")
+    kapt("com.google.dagger:hilt-android-compiler:2.48")
+
+    // hilt with viewmodel
+    implementation(libs.androidx.hilt.navigation.compose)
+
+
+    // logging interceptor
+    implementation(libs.logging.interceptor)
 
     implementation(libs.androidx.camera.core)
     implementation(libs.androidx.camera.camera2)
@@ -84,4 +107,9 @@ dependencies {
     // Lifecycle
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
     implementation ("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
+
+    implementation (libs.androidx.material.icons.extended)
+    implementation (libs.androidx.runtime.livedata)
+    implementation (libs.androidx.navigation.compose)
+    implementation (libs.accompanist.systemuicontroller)
 }

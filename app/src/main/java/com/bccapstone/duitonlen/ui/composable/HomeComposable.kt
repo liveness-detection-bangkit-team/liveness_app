@@ -1,120 +1,59 @@
-package com.bccapstone.duitonlen.ui.screen
+package com.bccapstone.duitonlen.ui.composable
 
-
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CropFree
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.MoreHoriz
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.SwapHoriz
+import androidx.compose.material.icons.filled.Tv
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.Wifi
+import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material.icons.outlined.VisibilityOff
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.bccapstone.duitonlen.ui.theme.DuitOnlenTheme
-import androidx.compose.material.icons.outlined.Visibility
-import androidx.compose.material.icons.outlined.VisibilityOff
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.ui.tooling.preview.Preview
-
-class HomePage : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            DuitOnlenTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    EWalletScreen()
-                }
-            }
-        }
-    }
-}
 
 @Composable
-fun EWalletScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .verticalScroll(rememberScrollState())
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
-                    ) {
-                        // TopBar
-                        Box(
-                            modifier = Modifier
-
-                        ) {
-                            TopBar()
-                        }
-
-                        // BalanceCard yang overlap dengan TopBar
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 75.dp)
-                        ) {
-                            BalanceCard()
-                        }
-                    }
-
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                            .offset(y = (-30).dp)  // Nilai negatif untuk efek overlap ke atas
-                    ) {
-                        Column {
-                            MenuButtons()
-                            PaymentSection()
-                            FinancialRecords()
-                            Spacer(modifier = Modifier.height(80.dp))
-                        }
-                    }
-                }
-            }
-
-            // Bottom Navigation dengan fixed posisition di bawah
-            BottomNavigation()
-        }
-    }
-}
-
-@Composable
-fun TopBar() {
+fun TopBar(greeting: String) {
     // Red curved background
     Box(
         modifier = Modifier
@@ -132,15 +71,17 @@ fun TopBar() {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column {
+            Column(
+                modifier = Modifier.padding(top = 16.dp)
+            ) {
                 Text(
-                    text = "Hi,",
+                    text = "Welcome,",
                     fontSize = 20.sp,
                     color = Color.White,
-                    fontWeight = FontWeight.Bold
+                    fontStyle = FontStyle.Italic
                 )
                 Text(
-                    text = "User",
+                    text = greeting,
                     fontSize = 20.sp,
                     color = Color.White,
                     fontWeight = FontWeight.Bold
@@ -465,7 +406,7 @@ fun FinancialRecords() {
                 Column(
                     modifier = Modifier
                         .height(80.dp)
-                        .width(162.dp)
+                        .width(160.dp)
                         .background(
                             color = Color(0xFFFF9046),
                             shape = RoundedCornerShape(8.dp)
@@ -485,10 +426,11 @@ fun FinancialRecords() {
                         color = Color.White
                     )
                 }
+                Spacer(modifier = Modifier.width(16.dp))
                 Column(
                     modifier = Modifier
                         .height(80.dp)
-                        .width(162.dp)
+                        .width(160.dp)
                         .background(
                             color = Color(0xFFFF9046),
                             shape = RoundedCornerShape(8.dp)
@@ -637,13 +579,5 @@ fun BottomNavItem(
             fontSize = 12.sp,
             color = tint
         )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun CobaPreview() {
-    DuitOnlenTheme {
-        EWalletScreen()
     }
 }
