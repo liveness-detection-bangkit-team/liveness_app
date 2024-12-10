@@ -37,26 +37,19 @@ fun MainNavigation() {
         composable("instruction") {
             InstructionScreenContainer(navController = navController)
         }
-        composable("front_liveness") {
-            LivenessScreenContainer(navController = navController, modelName = "front-facing", onHumanDetected = {
-                navController.navigate("blink_liveness") {
-                    popUpTo("instruction") { inclusive = true }
-                }
-            }, instruction = "Front Face", nextBtn = "blink_liveness")
-        }
-        composable("blink_liveness") {
-            LivenessScreenContainer(navController = navController, modelName = "blink-detect", onHumanDetected = {
-                navController.navigate("left_liveness") {
-                    popUpTo("instruction") { inclusive = true }
-                }
-            }, instruction = "Blink", nextBtn = "left_liveness")
-        }
         composable("left_liveness") {
-            LivenessScreenContainer(navController = navController, modelName = "left-detect", onHumanDetected = {
+            LivenessScreenContainer(navController = navController, modelName = "all-pos", onHumanDetected = {
+                navController.navigate("right_liveness") {
+                    popUpTo("instruction") { inclusive = true }
+                }
+            }, instruction = "Turn Left", nextBtn = "right_liveness", headMotion = "left")
+        }
+        composable("right_liveness") {
+            LivenessScreenContainer(navController = navController, modelName = "all-pos", onHumanDetected = {
                 navController.navigate("result") {
                     popUpTo("instruction") { inclusive = true }
                 }
-            }, instruction = "Turn Left", nextBtn = "result")
+            }, instruction = "Turn Right", nextBtn = "result", headMotion = "right")
         }
         composable(
             "result",

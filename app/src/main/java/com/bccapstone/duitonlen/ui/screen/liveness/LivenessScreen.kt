@@ -1,12 +1,10 @@
 package com.bccapstone.duitonlen.ui.screen.liveness
 
 import android.Manifest
-import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -21,10 +19,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,17 +31,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.bccapstone.duitonlen.ui.theme.DuitOnlenTheme
+import com.bccapstone.duitonlen.R
 
 
+/*
 class LivenessScreen() : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,8 +61,17 @@ class LivenessScreen() : ComponentActivity() {
     }
 }
 
+ */
+
 @Composable
-fun LivenessScreenContainer(navController: NavController, modelName: String, onHumanDetected: () -> Unit, instruction: String, nextBtn: String) {
+fun LivenessScreenContainer(
+    navController: NavController,
+    modelName: String,
+    onHumanDetected: () -> Unit,
+    instruction: String,
+    nextBtn: String,
+    headMotion: String
+) {
     var hasCameraPermission by remember { mutableStateOf(false) }
 
     val launcher = rememberLauncherForActivityResult(
@@ -75,13 +84,22 @@ fun LivenessScreenContainer(navController: NavController, modelName: String, onH
         launcher.launch(Manifest.permission.CAMERA)
     }
 
+
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(color = Color.White)
     ) {
         if (hasCameraPermission) {
-            Liveness(navController, modelName = modelName, onHumanDetected = onHumanDetected, instruction = instruction, nextBtn = nextBtn)
+            Liveness(
+                navController,
+                modelName = modelName,
+                onHumanDetected = onHumanDetected,
+                instruction = instruction,
+                nextBtn = nextBtn,
+                headMotion = headMotion
+            )
         } else {
             Text(
                 text = "Aplikasi membutuhkan izin kamera",
@@ -98,7 +116,8 @@ fun Liveness(
     onHumanDetected: () -> Unit = {},
     modelName: String,
     instruction: String = "Please show your face",
-    nextBtn: String
+    nextBtn: String,
+    headMotion: String
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -110,8 +129,20 @@ fun Liveness(
             lifecycleOwner,
             previewView,
             onHumanDetected,
-            modelName
+            modelName,
+            headMotion
         )
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.releaseCamera()
+        }
+    }
+
+    // Re-initialize the camera when the composable is recomposed
+    LaunchedEffect(previewView) {
+        viewModel.reinitializeCamera(previewView)
     }
 
     Box(
@@ -143,15 +174,19 @@ fun Liveness(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
                     .offset(y = (-150).dp)
+                    .background(
+                        color = Color.Black,
+                        shape = CircleShape
+                    )
             ) {
 
 
-
-
-                if (!viewModel.isModelReady.value) {
+                if (viewModel.cameraManager == null || !viewModel.isModelReady.value) {
                     CircularProgressIndicator(
+                        color = Color.Green,
+                        strokeWidth = 8.dp,
                         modifier = Modifier
-                            .size(350.dp)
+                            .size(300.dp)
                             .clip(CircleShape)
                             .border(1.dp, Color.White, CircleShape)
                     )
@@ -159,19 +194,20 @@ fun Liveness(
                     AndroidView(
                         factory = { previewView },
                         modifier = Modifier
-                            .size(350.dp)
+                            .size(300.dp)
                             .clip(CircleShape)
-                            .border(1.dp, Color.White, CircleShape)
                     )
 
-                    // Show detection status
-                    if (viewModel.isHumanDetected.value) {
-                        Box(
-                            modifier = Modifier
-                                .matchParentSize()
-                                .border(1.dp, Color.Green, CircleShape)
-                        )
-                    }
+                }
+                // Circular Progress Indicator outside the border
+                if (viewModel.isModelReady.value && viewModel.countdownTime.value > 0) {
+                    CircularProgressIndicatorWithBorder(
+                        countdownTime = viewModel.countdownTime.value,
+                        totalTime = 3000,
+                        color = Color.Green,
+                        modifier = Modifier
+                            .size(300.dp) // Adjust size to be outside the border
+                    )
                 }
             }
 
@@ -195,67 +231,49 @@ fun Liveness(
                     fontWeight = FontWeight.Bold,
                     fontSize = 24.sp,
                     modifier = Modifier
-                        .offset(y = 220.dp)
+                        .offset(y = (-175).dp)
                         .background(
-                            color = Color.Yellow,
+                            color = colorResource(id = R.color.colorSecondary),
                             shape = RoundedCornerShape(8.dp)
                         )
                         .padding(16.dp)
 
                 )
                 Text(
-                    text = if (viewModel.isHumanDetected.value) "Human Detected" else "Unidentified",
+                    text = if (viewModel.isDirectionDetected.value) "Human Detected" else "Unidentified",
                     fontWeight = FontWeight.Bold,
                     fontSize = 30.sp,
                     modifier = Modifier
-                        .offset(y = 230.dp)
+                        .offset(y = 120.dp)
                 )
-                Text(
-                    text = viewModel.countdownTime.value.toString(),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 30.sp,
-                    modifier = Modifier
-                        .offset(y = 230.dp)
-                )
-                Text(
-                    text = viewModel.onHumanDetected.value.toString(),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 30.sp,
-                    modifier = Modifier
-                        .offset(y = 230.dp)
-                )
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .offset(y = 240.dp)
-                        .padding(16.dp)
-                        .background(
-                            color = Color.Red,
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                        .clickable {
-                            navController.navigate(nextBtn) {
-                                popUpTo("instruction") {
-                                    inclusive = true
-                                }
-                            }
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "Next",
-                        fontSize = 18.sp,
-                        color = Color.White,
-                        modifier = Modifier
-                            .padding(16.dp)
-                    )
-                }
             }
-
-
-            // next button go to result screen
-
         }
     }
 }
 
+@Composable
+fun CircularProgressIndicatorWithBorder(
+    countdownTime: Int,
+    totalTime: Int,
+    color: Color,
+    modifier: Modifier = Modifier
+) {
+    val progress = (totalTime - countdownTime).toFloat() / totalTime
+
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+    ) {
+        Canvas(modifier = Modifier.matchParentSize()) {
+            val strokeWidth = 8.dp.toPx()
+            size.minDimension / 2 - strokeWidth / 2
+            drawArc(
+                color = color,
+                startAngle = -90f,
+                sweepAngle = 360 * progress,
+                useCenter = false,
+                style = Stroke(strokeWidth)
+            )
+        }
+    }
+}

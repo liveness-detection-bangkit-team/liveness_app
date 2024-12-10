@@ -11,13 +11,17 @@ import android.util.Size
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
-import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
+import org.tensorflow.lite.DataType
+import org.tensorflow.lite.support.common.ops.CastOp
+import org.tensorflow.lite.support.image.ImageProcessor
+import org.tensorflow.lite.support.image.TensorImage
+import org.tensorflow.lite.support.image.ops.ResizeOp
 import java.io.ByteArrayOutputStream
 
 class CameraManager(
@@ -25,7 +29,6 @@ class CameraManager(
     private val lifecycleOwner: LifecycleOwner,
     private val onImageCaptured: (Bitmap) -> Unit
 ) {
-    private var imageCapture: ImageCapture? = null
     private var camera: Camera? = null
     private var preview: Preview? = null
     private var imageAnalyzer: ImageAnalysis? = null
@@ -33,7 +36,6 @@ class CameraManager(
     fun startCamera(previewView: PreviewView) {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
 
-        // Add a listener to the cameraProviderFuture
         cameraProviderFuture.addListener({
             val cameraProvider = cameraProviderFuture.get()
 
@@ -49,7 +51,8 @@ class CameraManager(
                     ) { imageProxy ->
                         val bitmap = imageProxyToBitmap(imageProxy)
                         if (bitmap != null) {
-                            onImageCaptured(bitmap)
+                            val processedBitmap = preprocessBitmap(bitmap)
+                            onImageCaptured(processedBitmap)
                         }
                         imageProxy.close()
                     }
@@ -96,4 +99,26 @@ class CameraManager(
         return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
     }
 
+    // Preprocess the Bitmap using ImageProcessor
+    private fun preprocessBitmap(bitmap: Bitmap): Bitmap {
+        val tensorImage = TensorImage.fromBitmap(bitmap)
+
+        val imageProcessor = ImageProcessor.Builder()
+            .add(ResizeOp(224, 224, ResizeOp.ResizeMethod.NEAREST_NEIGHBOR))
+            .add(CastOp(DataType.FLOAT32))
+            .build()
+
+        val processedTensorImage = imageProcessor.process(tensorImage)
+
+        // Convert TensorImage back to Bitmap
+        return processedTensorImage.bitmap
+    }
+
+    fun unbindAll() {
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
+        cameraProviderFuture.addListener({
+            val cameraProvider = cameraProviderFuture.get()
+            cameraProvider.unbindAll()
+        }, ContextCompat.getMainExecutor(context))
+    }
 }

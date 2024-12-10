@@ -15,15 +15,22 @@ import kotlinx.coroutines.launch
 
 class LivenessViewModel : ViewModel() {
     private lateinit var mlModelManager: MLModelManager
-    private lateinit var cameraManager: CameraManager
-
-    private val _isHumanDetected = mutableStateOf(false)
-    val isHumanDetected: State<Boolean> = _isHumanDetected
-
-    private val _onHumanDetected = mutableFloatStateOf(0f)
-    val onHumanDetected: State<Float> = _onHumanDetected
+    var cameraManager: CameraManager? = null
 
     private var detectionStartTime: Long? = null
+    private var lastCorrectPositionTime: Long? = null
+
+
+    // is direction detected
+    private val _isDirectionDetected = mutableStateOf(false)
+    val isDirectionDetected: State<Boolean> = _isDirectionDetected
+
+    private val _faceDirectionResult = mutableFloatStateOf(0f)
+    val faceDirectionResult: State<Float> = _faceDirectionResult
+
+    // face direction
+    private val _faceDirection = mutableStateOf("")
+    val faceDirection: State<String> = _faceDirection
 
     private val _countdownTime = mutableIntStateOf(0)
     val countdownTime: State<Int> = _countdownTime
@@ -40,10 +47,11 @@ class LivenessViewModel : ViewModel() {
         lifecycleOwner: LifecycleOwner,
         previewView: PreviewView,
         onHumanDetected: () -> Unit,
-        modelName: String
+        modelName: String,
+        headMotion: String
     ) {
         viewModelScope.launch {
-            mlModelManager = MLModelManager(context, modelName)
+            mlModelManager = MLModelManager(modelName)
 
             val modelDownloaded = mlModelManager.downloadModel()
             if (!modelDownloaded) {
@@ -61,28 +69,60 @@ class LivenessViewModel : ViewModel() {
                 // will return true, if the human face is detected for 3 seconds
                 viewModelScope.launch {
                     val humanDetected = mlModelManager.processImage(bitmap)
-                    _onHumanDetected.floatValue = humanDetected
 
-                    if (humanDetected >= 0.35f) {
+                    /*
+                    * get the highest probability from the model output
+                    * with according labels [0: "background_train", 1: "front_facing",2: "left", 3: "right", 4: "up"]
+                    * with that ignore the first
+                     */
+                    val highestProbability = humanDetected.sliceArray(1..4).maxOrNull() ?: 0f
+                    val faceDirection = when (highestProbability) {
+                        humanDetected[1] -> "front"
+                        humanDetected[2] -> "left"
+                        humanDetected[3] -> "right"
+                        humanDetected[4] -> "up"
+                        else -> "others"
+                    }
+                    _faceDirection.value = faceDirection
+                    _faceDirectionResult.floatValue = highestProbability
+
+
+                    val currentTime = System.currentTimeMillis()
+
+                    if (faceDirection == headMotion) {
                         if (detectionStartTime == null) {
-                            detectionStartTime = System.currentTimeMillis()
+                            detectionStartTime = currentTime
                         } else {
-                            val detectionTime = System.currentTimeMillis() - detectionStartTime!!
+                            val detectionTime = currentTime - detectionStartTime!!
                             _countdownTime.intValue = (3000 - detectionTime).toInt()
+                            lastCorrectPositionTime = currentTime
+
                             if (detectionTime >= 3000 && countdownTime.value <= 0) {
-                                _isHumanDetected.value = true
+                                _isDirectionDetected.value = true
                                 onHumanDetected()
                             }
                         }
-                    } else{
+                    } else {
+                        // Stop the countdown if the face direction changes
                         detectionStartTime = null
+                        lastCorrectPositionTime = null
                     }
-
                 }
+
             }
 
-            cameraManager.startCamera(previewView)
+            cameraManager!!.startCamera(previewView)
         }
+    }
+
+    // Release camera resources
+    fun releaseCamera() {
+        cameraManager?.unbindAll()
+    }
+
+    // Re-initialize camera resources
+    fun reinitializeCamera(previewView: PreviewView) {
+        cameraManager?.startCamera(previewView)
     }
 }
 

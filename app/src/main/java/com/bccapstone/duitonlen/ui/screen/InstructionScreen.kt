@@ -107,7 +107,7 @@ fun Instruction(navController: NavController) {
                         shape = RoundedCornerShape(8.dp)
                     )
                     .clickable {
-                        navController.navigate("front_liveness")
+                        navController.navigate("left_liveness")
                     }
                 ,
                 contentAlignment = Alignment.Center
