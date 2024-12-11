@@ -2,6 +2,7 @@ import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -149,7 +150,8 @@ fun LoginScreen(
                 .padding(bottom = 16.dp)
                 .height(50.dp),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-            enabled = username.isNotBlank() && password.isNotBlank()
+            enabled = username.isNotBlank() && password.isNotBlank(),
+            shape = RoundedCornerShape(8.dp)
         ) {
             if (loginState is Result.Loading) {
                 CircularProgressIndicator(

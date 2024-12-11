@@ -2,7 +2,6 @@ package com.bccapstone.duitonlen.presentation.screens.home
 
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +12,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -33,9 +33,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.bccapstone.duitonlen.presentation.theme.DuitOnlenTheme
+import androidx.navigation.NavController
 import com.bccapstone.duitonlen.data.Result
 import com.bccapstone.duitonlen.data.models.ApiResponse
+import com.bccapstone.duitonlen.presentation.theme.DuitOnlenTheme
 import com.bccapstone.duitonlen.ui.composable.BalanceCard
 import com.bccapstone.duitonlen.ui.composable.BottomNavigation
 import com.bccapstone.duitonlen.ui.composable.FinancialRecords
@@ -44,7 +45,8 @@ import com.bccapstone.duitonlen.ui.composable.PaymentSection
 import com.bccapstone.duitonlen.ui.composable.TopBar
 
 @Composable
-fun Greeting(
+fun HomeScreen(
+    navController: NavController,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
     onLogoutSuccess: () -> Unit = {}
@@ -98,12 +100,12 @@ fun Greeting(
     }
 
 
-    EWalletScreen(greeting, viewModel, logoutState)
+    EWalletScreen(greeting, viewModel, logoutState, navController)
 }
 
 
 @Composable
-fun EWalletScreen(greeting: String, viewModel: HomeViewModel, logoutState: Result<ApiResponse>) {
+fun EWalletScreen(greeting: String, viewModel: HomeViewModel, logoutState: Result<ApiResponse>, navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -167,7 +169,8 @@ fun EWalletScreen(greeting: String, viewModel: HomeViewModel, logoutState: Resul
                         }, modifier = Modifier
                             .align(Alignment.End)
                             .padding(16.dp)
-                            .fillMaxWidth()
+                            .fillMaxWidth(),
+                        shape = RoundedCornerShape(8.dp)
                     ) {
                         if (logoutState is Result.Loading) {
                             CircularProgressIndicator(
@@ -187,7 +190,7 @@ fun EWalletScreen(greeting: String, viewModel: HomeViewModel, logoutState: Resul
             }
 
             // Bottom Navigation dengan fixed posisition di bawah
-            BottomNavigation()
+            BottomNavigation(navController = navController)
         }
     }
 }
@@ -196,6 +199,8 @@ fun EWalletScreen(greeting: String, viewModel: HomeViewModel, logoutState: Resul
 @Composable
 fun GreetingPreview() {
     DuitOnlenTheme {
-        Greeting()
+        HomeScreen(
+            navController = NavController(LocalContext.current)
+        )
     }
 }

@@ -5,38 +5,29 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import com.bccapstone.duitonlen.ui.screen.InstructionScreenContainer
-import com.bccapstone.duitonlen.ui.screen.liveness.LivenessScreenContainer
-import com.bccapstone.duitonlen.ui.screen.ResultScreenContainer
-import com.bccapstone.duitonlen.ui.theme.DuitOnlenTheme
-import com.bccapstone.duitonlen.presentation.theme.DuitOnlenTheme
-import dagger.hilt.android.AndroidEntryPoint
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.NavHost
 import com.bccapstone.duitonlen.presentation.screens.auth.register.RegisterScreen
-import com.bccapstone.duitonlen.presentation.screens.home.Greeting
+import com.bccapstone.duitonlen.presentation.theme.DuitOnlenTheme
+import com.bccapstone.duitonlen.presentation.screens.InstructionScreenContainer
+import com.bccapstone.duitonlen.presentation.screens.result.SuccessScreen
+import com.bccapstone.duitonlen.presentation.screens.home.HomeScreen
+import com.bccapstone.duitonlen.presentation.screens.liveness.LivenessScreenContainer
+import com.bccapstone.duitonlen.presentation.screens.result.FailedScreen
+import dagger.hilt.android.AndroidEntryPoint
+
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             DuitOnlenTheme {
-
-                MainNavigation()
-
                 val navController = rememberNavController()
+
                 NavHost(navController = navController, startDestination = "login") {
                     composable("login") {
                         LoginScreen(
@@ -69,7 +60,8 @@ class MainActivity : ComponentActivity() {
                     }
 
                     composable("home") {
-                        Greeting(
+                        HomeScreen(
+                            navController = navController,
                             onLogoutSuccess = {
                                 navController.navigate("login") {
                                     popUpTo("home") { inclusive = true }
@@ -78,37 +70,105 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
+                    composable("instruction") {
+                        InstructionScreenContainer(
+                            navController = navController,
+                            navigateTo = "up_liveness"
+                        )
+                    }
+
+                    composable("up_liveness") {
+                        LivenessScreenContainer(
+                            modelName = "all-pos",
+                            onHumanDetected = {
+                                navController.navigate("spoof_detection/left_liveness") {
+                                    popUpTo("instruction") { inclusive = false }
+                                    launchSingleTop = true
+                                }
+                            },
+                            onHumanNotDetected = {
+                                navController.navigate("result_failed") {
+                                    popUpTo("instruction") { inclusive = false }
+                                }
+                            },
+                            instruction = "Look Up",
+                            headMotion = "up"
+                        )
+                    }
+
+                    // Liveness check
+                    composable("left_liveness") {
+                        LivenessScreenContainer(
+                            modelName = "all-pos",
+                            onHumanDetected = {
+                                navController.navigate("spoof_detection/right_liveness") {
+                                    popUpTo("instruction") { inclusive = false }
+                                    launchSingleTop = true
+                                }
+                            },
+                            onHumanNotDetected = {
+                                navController.navigate("result_failed") {
+                                    popUpTo("instruction") { inclusive = false }
+                                }
+                            },
+                            instruction = "Turn Left",
+                            headMotion = "left"
+                        )
+                    }
+
+
+                    composable("right_liveness") {
+                        LivenessScreenContainer(
+                            modelName = "all-pos",
+                            onHumanDetected = {
+                                navController.navigate("spoof_detection/result_success") {
+                                    popUpTo("instruction") { inclusive = false }
+                                    launchSingleTop = true
+                                }
+                            },
+                            onHumanNotDetected = {
+                                navController.navigate("result_failed") {
+                                    popUpTo("instruction") { inclusive = false }
+                                }
+                            },
+                            instruction = "Turn Right",
+                            headMotion = "right"
+                        )
+                    }
+
+
+
+                    composable("spoof_detection/{nextDestination}") { backStackEntry ->
+                        val nextDestination =
+                            backStackEntry.arguments?.getString("nextDestination")
+                                ?: "result_failed"
+                        LivenessScreenContainer(
+                            modelName = "spoof-detect",
+                            onHumanDetected = {
+                                navController.navigate(nextDestination) {
+                                    popUpTo("instruction") { inclusive = false }
+                                    launchSingleTop = true
+                                }
+                            },
+                            onHumanNotDetected = {
+                                navController.navigate("result_failed") {
+                                    popUpTo("instruction") { inclusive = false }
+                                }
+                            },
+                            instruction = "Face the camera",
+                            headMotion = "face"
+                        )
+                    }
+
+                    composable("result_success") {
+                        SuccessScreen(navController = navController)
+                    }
+
+                    composable("result_failed") {
+                        FailedScreen(navController = navController)
+                    }
                 }
             }
-        }
-
-@Composable
-fun MainNavigation() {
-    val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "instruction") {
-        composable("instruction") {
-            InstructionScreenContainer(navController = navController)
-        }
-        composable("left_liveness") {
-            LivenessScreenContainer(navController = navController, modelName = "all-pos", onHumanDetected = {
-                navController.navigate("right_liveness") {
-                    popUpTo("instruction") { inclusive = true }
-                }
-            }, instruction = "Turn Left", nextBtn = "right_liveness", headMotion = "left")
-        }
-        composable("right_liveness") {
-            LivenessScreenContainer(navController = navController, modelName = "all-pos", onHumanDetected = {
-                navController.navigate("result") {
-                    popUpTo("instruction") { inclusive = true }
-                }
-            }, instruction = "Turn Right", nextBtn = "result", headMotion = "right")
-        }
-        composable(
-            "result",
-        ) {
-            ResultScreenContainer(
-                navController = navController
-            )
         }
     }
 }

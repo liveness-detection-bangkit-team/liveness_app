@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -169,10 +170,11 @@ fun RegisterScreen(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(50.dp)
-                .padding(bottom = 16.dp),
+                .padding(bottom = 16.dp)
+                .height(50.dp),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-            enabled = fullname.isNotBlank() && username.isNotBlank() && password.isNotBlank()
+            enabled = fullname.isNotBlank() && username.isNotBlank() && password.isNotBlank(),
+            shape = RoundedCornerShape(8.dp)
         ) {
             if (registerState is Result.Loading) {
                 CircularProgressIndicator(

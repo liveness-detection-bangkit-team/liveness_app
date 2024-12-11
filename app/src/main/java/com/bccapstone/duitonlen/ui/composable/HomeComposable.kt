@@ -51,6 +51,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 
 @Composable
 fun TopBar(greeting: String) {
@@ -484,7 +485,9 @@ fun FinancialRecords() {
 }
 
 @Composable
-fun BottomNavigation() {
+fun BottomNavigation(
+    navController: NavController
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -543,8 +546,10 @@ fun BottomNavigation() {
             elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
         ) {
             Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+                modifier = Modifier.fillMaxSize()
+                    .clickable { navController.navigate("instruction") }
+                ,
+                contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     imageVector = Icons.Default.CropFree,

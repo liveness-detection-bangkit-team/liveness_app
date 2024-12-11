@@ -1,4 +1,4 @@
-package com.bccapstone.duitonlen.ui.screen
+package com.bccapstone.duitonlen.presentation.screens
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -15,8 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,8 +25,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.bccapstone.duitonlen.ui.theme.DuitOnlenTheme
 import com.bccapstone.duitonlen.R
+import com.bccapstone.duitonlen.presentation.theme.DuitOnlenTheme
 
 class InstructionScreen() : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,7 +40,7 @@ class InstructionScreen() : ComponentActivity() {
 }
 
 @Composable
-fun InstructionScreenContainer(navController: NavController) {
+fun InstructionScreenContainer(navController: NavController, navigateTo: String) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -50,11 +48,11 @@ fun InstructionScreenContainer(navController: NavController) {
                 color = Color.White,
             )
     ){
-        Instruction(navController)
+        Instruction(navController, navigateTo)
     }
 }
 @Composable
-fun Instruction(navController: NavController) {
+fun Instruction(navController: NavController, navigateTo: String) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -89,12 +87,18 @@ fun Instruction(navController: NavController) {
                 .fillMaxWidth()
         ) {
             Text(
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+                    .padding(horizontal = 20.dp),
                 text = "You Will be given a set of instruction, to scan your biometrics, so please follow the instruction carefully.",
-                fontSize = 18.sp
+                textAlign = androidx.compose.ui.text.style.TextAlign.Justify,
+                fontSize = 18.sp,
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+                    .padding(horizontal = 20.dp),
                 text = "as soon as you are ready click the button below!",
+                textAlign = androidx.compose.ui.text.style.TextAlign.Justify,
                 fontSize = 18.sp
             )
             Box(
@@ -107,7 +111,7 @@ fun Instruction(navController: NavController) {
                         shape = RoundedCornerShape(8.dp)
                     )
                     .clickable {
-                        navController.navigate("left_liveness")
+                        navController.navigate(navigateTo)
                     }
                 ,
                 contentAlignment = Alignment.Center

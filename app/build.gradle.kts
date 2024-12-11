@@ -6,7 +6,6 @@ plugins {
     id("com.google.gms.google-services")
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
-
 }
 
 android {
@@ -62,6 +61,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.espresso.core)
+    implementation(libs.tensorflow.lite.metadata)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -70,14 +70,18 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    implementation (libs.retrofit)
+    // retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation (libs.converter.gson)
     implementation (libs.kotlinx.coroutines.android)
     implementation (libs.androidx.lifecycle.viewmodel.compose)
 
     // hilt
     implementation("com.google.dagger:hilt-android:2.49")
-    kapt("com.google.dagger:hilt-android-compiler:2.48")
+    kapt("com.google.dagger:hilt-android-compiler:2.49")
+
+    // dagger
+//    implementation("com.google.dagger:dagger:2.49")
 
     // hilt with viewmodel
     implementation(libs.androidx.hilt.navigation.compose)
@@ -109,7 +113,15 @@ dependencies {
     implementation ("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
 
     implementation (libs.androidx.material.icons.extended)
-    implementation (libs.androidx.runtime.livedata)
-    implementation (libs.androidx.navigation.compose)
+
+    // androidx livedata
+    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.8.7")
+
+    // androidx navigation compose
+    implementation ("androidx.navigation:navigation-compose:2.8.4")
     implementation (libs.accompanist.systemuicontroller)
+
+    implementation("androidx.room:room-runtime:2.5.0")
+    kapt("androidx.room:room-compiler:2.5.0")
+
 }
